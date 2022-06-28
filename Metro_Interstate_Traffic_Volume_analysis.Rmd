@@ -1,0 +1,67 @@
+---
+title: "Metro Interstate Traffic Volume Analysis"
+author: "Tianyu Shen"
+date: '2022-06-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Importing cleaned dataset and library
+
+```{r dataset}
+df <- read.csv('Metro_Interstate_Traffic_Volume_CLEANED.csv')
+library(caret)
+library(ggplot2)
+library(dplyr)
+cols <- c("holiday", "weather", "month", "weekday", "hour")
+df[cols] <- lapply(df[cols], factor) #factorizing categorical data
+
+#normalizing data for analysis
+
+min_max_norm <- function(x) {(x - min(x)) / (max(x) - min(x))}
+df$temp <- round(min_max_norm(df$temp),2)
+df$rain_1h <- round(min_max_norm(df$rain_1h),2)
+df$snow_1h <- round(min_max_norm(df$snow_1h),2)
+df$clouds_all <- round(min_max_norm(df$clouds_all),2)
+```
+
+K-Fold Regression model
+
+```{r regression}
+cv_method <- trainControl(method = 'cv', number = 5)
+glm_model <- train(traffic_volume ~ . - date_time, data = df, method = 'glm', trControl = cv_method)
+print(glm_model)
+glm_pred <- predict(glm_model, df)
+```
+
+K-Fold KNN model
+
+```{r KNN}
+cv_method <- trainControl(method = 'cv', number = 5)
+knn_model <- train(traffic_volume ~ . - date_time, data = df, method = 'knn', trControl = cv_method)
+print(knn_model)
+knn_pred <- predict(knn_model, df)
+```
+
+K-Fold Decision Tree model
+
+```{r Decision Tree}
+cv_method <- trainControl(method = 'cv', number = 5)
+dt_model <- train(traffic_volume ~ . - date_time, data = df, method = 'rpart', trControl = cv_method)
+print(dt_model)
+dt_pred <- predict(dt_model, df)
+```
+
+Model Comparison
+
+```{r Comparison}
+model_comparison <- resamples(list(glm =  glm_model, knn = knn_model, dt = dt_model))
+summary(model_comparison)
+bwplot(model_comparison)
+```
+From the results of the three models after being cross-validated, we can tell that Decision tree has the worse prediction out of all three. Being higher in Mean Absolute Error making it a big discrepancy between actual dataset and the prediction, higher in Root Mean Square Error means higher standard deviation of the residuals, while having almost HALF of the RSquared of the other Two models.
+
+As a comparison between Linear Regression and KNN we can see that KNN beats GLM model in all three aspects MAE, RMSE, and RSquared, therefore we can conclude that KNN is the best model for this particular dataset. However More tweaking and exploratory methods are needed to optimize the data and training methods for future re-analysis.
