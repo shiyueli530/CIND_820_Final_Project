@@ -18,41 +18,42 @@ library(ggplot2)
 library(dplyr)
 cols <- c("holiday", "weather", "month", "weekday", "hour")
 df[cols] <- lapply(df[cols], factor) #factorizing categorical data
-
-#normalizing data for analysis
-
-min_max_norm <- function(x) {(x - min(x)) / (max(x) - min(x))}
-df$temp <- round(min_max_norm(df$temp),2)
-df$rain_1h <- round(min_max_norm(df$rain_1h),2)
-df$snow_1h <- round(min_max_norm(df$snow_1h),2)
-df$clouds_all <- round(min_max_norm(df$clouds_all),2)
 ```
 
 K-Fold Regression model
 
 ```{r regression}
+start_time <- Sys.time()
 cv_method <- trainControl(method = 'cv', number = 5)
-glm_model <- train(traffic_volume ~ . - date_time, data = df, method = 'glm', trControl = cv_method)
+glm_model <- train(traffic_volume ~ ., data = df, method = 'glm', trControl = cv_method)
 print(glm_model)
 glm_pred <- predict(glm_model, df)
+end_time <- Sys.time()
+end_time - start_time
 ```
 
 K-Fold KNN model
 
 ```{r KNN}
+start_time <- Sys.time()
 cv_method <- trainControl(method = 'cv', number = 5)
-knn_model <- train(traffic_volume ~ . - date_time, data = df, method = 'knn', trControl = cv_method)
+knn_model <- train(traffic_volume ~ ., data = df, method = 'knn', trControl = cv_method)
 print(knn_model)
 knn_pred <- predict(knn_model, df)
+end_time <- Sys.time()
+end_time - start_time
 ```
 
 K-Fold Decision Tree model
 
 ```{r Decision Tree}
+start_time <- Sys.time()
 cv_method <- trainControl(method = 'cv', number = 5)
-dt_model <- train(traffic_volume ~ . - date_time, data = df, method = 'rpart', trControl = cv_method)
+dt_model <- train(traffic_volume ~ ., data = df, method = 'rpart', trControl = cv_method)
 print(dt_model)
 dt_pred <- predict(dt_model, df)
+end_time <- Sys.time()
+end_time - start_time
 ```
 
 Model Comparison
