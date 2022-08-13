@@ -15,4 +15,6 @@ traffic volume dataset analysis and modelling
  - Traffic Analysis.ipynb - python notebook for further regression modeling using alternative technique
  
  - Traffic Analysis.html - HTML format of the ipynb
+ 
+ - Regression Model Training on Predicting Traffic Volume.pptx - presentation of method and findings
 ```
