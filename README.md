@@ -1,5 +1,5 @@
-# CIND_820_Literature_Review
-early stages of traffic volume dataset exploratory analysis.
+# CIND_820_Final_Project
+traffic volume dataset analysis and modelling
   Current files includes:
  ```
  - Metro_Interstate_Traffic_Volume.csv - original dataset
